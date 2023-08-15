@@ -6,8 +6,9 @@ import os
 np.random.seed(42)
 
 # Define paths
-input_folder = 'Apartment/local_frame'   # Replace with your input folder path
-output_folder = 'Apartment/lf_sensor' # Replace with your desired output folder path
+base = "/home/parallels/Desktop/haha/data/"
+input_folder = base + 'Apartment/local_frame'   # Replace with your input folder path
+output_folder = base + 'Apartment/lf_sensor' # Replace with your desired output folder path
 
 # Create output folder if it doesn't exist
 if not os.path.exists(output_folder):

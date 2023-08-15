@@ -1,10 +1,12 @@
 import numpy as np
+from scipy.special import bernoulli
+import subprocess
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
-    n_mc = 10
-    results_path = "/Users/ziyuan/Desktop/idp/results"
-    
+    n_mc = 30
+    results_path = "/home/parallels/Desktop/haha/results"
+
 class SO3:
     @staticmethod
     def normalize(Rot):
@@ -486,3 +488,35 @@ def rot_trans_kl_div(cov1, cov2):
     kl[0] = kl_div(cov1_rot, cov2_rot)
     kl[1] = kl_div(cov1_t, cov2_t)
     return kl
+
+
+def str_T(T):
+    if T.ndim == 1:
+        output = '[' + str(T[0])
+        for i in range(1, T.shape[0]):
+            output += ',' + str(T[i])
+    elif T.ndim == 2:
+        output = '[' + str(T[0, 0])
+        for i in range(T.shape[0]):
+            for j in range(T.shape[1]):
+                if j == 0 and i == 0:
+                    continue
+                output += ',' + str(T[i, j])
+    else:
+        print('error')
+    output += ']'
+    return output
+
+
+def icp_without_cov(pc_ref, pc_in, T_init, pose_path):
+    initTranslation = str_T(T_init[:3, 3])
+    initRotation = str_T(T_init[:3, :3])
+
+    command = "cd " + Param.lpm_path + "build/ \n" + " " + "examples/icp_without_cov"
+    command += " " + "--config" + " " + Param.config_yaml
+    command += " " + "--output" + " " + pose_path
+    command += " " + "--initTranslation" + " " + initTranslation
+    command += " " + "--initRotation" + " " + initRotation
+    command += " " + pc_ref
+    command += " " + pc_in
+    subprocess.run(command, shell=True)

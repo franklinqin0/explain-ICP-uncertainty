@@ -4,7 +4,7 @@ import pickle
 from utils import *
 
 class Dataset:
-    path_sequence_base = '/Users/ziyuan/Desktop/Github/idp'
+    path_sequence_base = '/home/parallels/Desktop/haha/data'
     sequences = [
         'Apartment',
         # 'Hauptgebaude',
@@ -67,11 +67,11 @@ class Dataset:
         return os.path.join(path_sequence, 'local_frame', pc_file)
 
     def get_mc_results(self, sequence, scan_ref):
-        base_path = os.path.join('results', sequence, str(scan_ref))
+        base_path = os.path.join(Param.results_path, sequence, str(scan_ref))
         path_p = os.path.join(base_path, 'mc.p')
-        # if os.path.exists(path_p):
-        #     mondict = self.load(path_p)
-        #     return mondict['T_mc'], mondict['T_init_mc']
+        if os.path.exists(path_p):
+            mondict = self.load(path_p)
+            return mondict['T_mc'], mondict['T_init_mc']
 
         n = 0
         T_mc = SE3.new(Param.n_mc)
@@ -91,8 +91,4 @@ class Dataset:
             'T_init_mc': T_init_mc
             }
         self.dump(mondict, path_p)
-        # print("scan_ref: ", scan_ref)
-        # print(T_mc)
-        # print('---')
-        # print(T_init_mc)
         return T_mc, T_init_mc
