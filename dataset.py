@@ -4,7 +4,6 @@ import pickle
 from utils import *
 
 class Dataset:
-    path_sequence_base = '/home/parallels/Desktop/haha/data'
     sequences = [
         'Apartment',
         # 'Hauptgebaude',
@@ -24,26 +23,26 @@ class Dataset:
             self.preprocessing_data(sequence)
 
     def preprocessing_data(self, sequence):
-        path_sequence = os.path.join(self.path_sequence_base, sequence)
+        path_sequence = os.path.join(Param.path_sequence_base, sequence)
         path_pickle = os.path.join(path_sequence, 'data.p')
-        # if not Param.b_data and os.path.exists(path_pickle):
-        #     print('Data already preprocessed')
-        # else:
-        files = os.listdir(os.path.join(path_sequence, 'local_frame'))
-        n_scan = int((len(files)-1)/4)
-        T_gt_file = os.path.join(path_sequence, 'global_frame', 'pose_scanner_leica.csv')
-        T_gt_data = np.genfromtxt(T_gt_file, delimiter=',', skip_header=1)
-        T_gt = SE3.new(n_scan)
+        if os.path.exists(path_pickle):
+            print('Data already preprocessed')
+        else:
+            files = os.listdir(os.path.join(path_sequence, 'local_frame'))
+            n_scan = int((len(files)-1)/4)
+            T_gt_file = os.path.join(path_sequence, 'global_frame', 'pose_scanner_leica.csv')
+            T_gt_data = np.genfromtxt(T_gt_file, delimiter=',', skip_header=1)
+            T_gt = SE3.new(n_scan)
 
-        for k in range(3):
-            T_gt[:, k, :] = T_gt_data[:, 2+4*k:6+4*k]
-        mondict = {
-            'T_gt': T_gt,
-        }
-        self.dump(mondict, path_pickle)
+            for k in range(3):
+                T_gt[:, k, :] = T_gt_data[:, 2+4*k:6+4*k]
+            mondict = {
+                'T_gt': T_gt,
+            }
+            self.dump(mondict, path_pickle)
 
     def get_data(self, sequence):
-        path_sequence = os.path.join(self.path_sequence_base, sequence)
+        path_sequence = os.path.join(Param.path_sequence_base, sequence)
         path = os.path.join(path_sequence, 'data.p')
         mondict = self.load(path)
         return mondict['T_gt']
@@ -62,16 +61,17 @@ class Dataset:
             pickle.dump(mondict, file_pi)
 
     def get_pc(self, sequence, k):
-        path_sequence = os.path.join(self.path_sequence_base, sequence)
+        path_sequence = os.path.join(Param.path_sequence_base, sequence)
         pc_file = "Hokuyo_" + str(k) + ".csv"
-        return os.path.join(path_sequence, 'local_frame', pc_file)
+        # return os.path.join(path_sequence, 'local_frame', pc_file)
+        return os.path.join(path_sequence, Param.path_pc, pc_file)
 
-    def get_mc_results(self, sequence, scan_ref):
-        base_path = os.path.join(Param.results_path, sequence, str(scan_ref))
+    def get_mc_results(self, path, sequence, scan_ref):
+        base_path = os.path.join(path, sequence, str(scan_ref))
         path_p = os.path.join(base_path, 'mc.p')
-        if os.path.exists(path_p):
-            mondict = self.load(path_p)
-            return mondict['T_mc'], mondict['T_init_mc']
+        # if os.path.exists(path_p):
+        #     mondict = self.load(path_p)
+        #     return mondict['T_mc'], mondict['T_init_mc']
 
         n = 0
         T_mc = SE3.new(Param.n_mc)

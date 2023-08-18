@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy.special import bernoulli
 import subprocess
@@ -5,7 +6,24 @@ import subprocess
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
     n_mc = 30
-    results_path = "/home/parallels/Desktop/haha/results"
+    path_sequence_base = '/home/parallels/Desktop/haha/data'
+    path_pc = "local_frame" # "lf_sensor/001"
+    results_path = "/home/parallels/Desktop/idp/results"
+    results_pert = "/home/parallels/Desktop/idp/results_init/1_2"
+    # results_pert = "/home/parallels/Desktop/idp/results_sensor/001"
+    lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
+    config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
+    
+    # Parameters to follow
+    map_unc = 1.2
+    cov_std_pos = 0.2/np.sqrt(3)  # standard deviation of T_odo, translation
+    cov_std_rot = 10/(180*np.sqrt(3))*np.pi  # standard deviation of T_odo, rot
+    xi = np.zeros((n_mc, 6))
+    np.random.seed(42)
+    for i in range(n_mc):
+        xi[i] = np.hstack((np.random.normal(0, map_unc*cov_std_rot, 3),
+                           np.random.normal(0, map_unc*cov_std_pos, 3)))
+
 
 class SO3:
     @staticmethod
@@ -195,9 +213,9 @@ class SO3:
             print(quat)
             raise ValueError("Quaternion must be unit length")
 
-        if ordering is 'xyzw':
+        if ordering == 'xyzw':
             qx, qy, qz, qw = quat
-        elif ordering is 'wxyz':
+        elif ordering == 'wxyz':
             qw, qx, qy, qz = quat
         else:
             raise ValueError(
@@ -258,9 +276,9 @@ class SO3:
             qz = (Rot[1, 0] - Rot[0, 1]) / d
 
         # Check ordering last
-        if ordering is 'xyzw':
+        if ordering == 'xyzw':
             quat = np.array([qx, qy, qz, qw])
-        elif ordering is 'wxyz':
+        elif ordering == 'wxyz':
             quat = np.array([qw, qx, qy, qz])
         else:
             raise ValueError(
