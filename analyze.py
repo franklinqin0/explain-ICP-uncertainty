@@ -4,10 +4,6 @@ import icp
 from dataset import Dataset
 
 
-Param.sensor_noise = 2.1
-Param.init_unc = 3.1
-Param.update()
-
 def uncertainty(): # scan_ref=0
     dataset = Dataset()
 
@@ -17,8 +13,8 @@ def uncertainty(): # scan_ref=0
         for scan_ref in range(T_gt.shape[0]-1):
             for sn in np.arange(0, 2.1, 0.1):
                 for iu in np.arange(1, 3.1, 0.1):
-                    Param.sensor_noise = sn
-                    Param.init_unc = iu
+                    Param.sensor_noise = round(sn, 1)
+                    Param.init_unc = round(iu, 1)
                     Param.update()
                     Param.results_path = os.path.join(Param.results_base, seq, dec2str(0.0), dec2str(1.0))
                     Param.results_pert = os.path.join(Param.results_base, seq, dec2str(Param.sensor_noise), dec2str(Param.init_unc))
@@ -37,11 +33,11 @@ def uncertainty(): # scan_ref=0
                     if not os.path.exists(pert_path):
                         os.makedirs(pert_path)
                     # get data for a pair of point clouds
-                    scan_in = scan_ref + 1
-                    icp.mc(dataset, pert_path, seq, scan_ref, scan_in)
-                    kl_div = icp.results(dataset, clean_path, pert_path, seq, scan_ref, scan_in)
-                    print("rotation:", kl_div[0])
-                    print("translation:", kl_div[1])
+                    # scan_in = scan_ref + 1
+                    # icp.mc(dataset, pert_path, seq, scan_ref, scan_in)
+                    # kl_div = icp.results(dataset, clean_path, pert_path, seq, scan_ref, scan_in)
+                    # print("rotation:", kl_div[0])
+                    # print("translation:", kl_div[1])
                     # return kl_div[0], kl_div[1]
 
 rot, trans = uncertainty()

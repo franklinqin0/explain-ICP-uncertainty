@@ -36,13 +36,13 @@ def add_noise(noise_stddev, input_folder, output_folder):
         df.to_csv(os.path.join(output_folder, filename), index=False)
         k += 1
 
-    print("Processing complete!")
-
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
-    n_mc = 30
-    dir_path = "/usr/stud/qin/Desktop/idp/"
+    
+    # dir_path = "/usr/stud/qin/Desktop/idp/"
+    n_mc = 100
+    dir_path = "/storage/user/qin/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
     
@@ -52,7 +52,7 @@ class Param:
     results_path = None
     results_pert = None
     
-    lpm_path = os.path.join(dir_path, "libpointmatcher/") # libpointmatcher path
+    lpm_path = "/usr/stud/qin/Desktop/idp/libpointmatcher/" # libpointmatcher path
     config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
     
     cov_std_pos = 0.2/np.sqrt(3)  # standard deviation of T_odo, translation
