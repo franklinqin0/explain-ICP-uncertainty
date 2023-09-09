@@ -6,6 +6,7 @@ from dataset import Dataset
 if __name__ == "__main__":
     dataset = Dataset()
     
+    # create directories for clean and perturbed results
     for seq in dataset.sequences:
         T_gt = dataset.get_data(seq)
         for n in range(T_gt.shape[0]-1):
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     
     for seq in dataset.sequences:
         T_gt = dataset.get_data(seq)
-        # comput ICP covariance and results
+        # compute ICP covariance and results
         for scan_ref in range(T_gt.shape[0]-1):
             scan_in = scan_ref + 1
             # Monte-Carlo covariance

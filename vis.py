@@ -2,7 +2,7 @@ import numpy as np
 import open3d as o3d
 
 # Load the point cloud data from a CSV file
-pcd = np.loadtxt("/home/parallels/Desktop/haha/data/Apartment/lf_sensor/Hokuyo_14.csv", delimiter=",", skiprows=1)
+pcd = np.loadtxt("/home/parallels/Desktop/idp/data/Apartment/lf_sensor/Hokuyo_14.csv", delimiter=",", skiprows=1)
 
 # add sensor noise
 pcd_arr = pcd[:, 1:4] # np.asarray(pcd.points)

@@ -36,9 +36,7 @@ class Dataset:
 
             for k in range(3):
                 T_gt[:, k, :] = T_gt_data[:, 2+4*k:6+4*k]
-            mondict = {
-                'T_gt': T_gt,
-            }
+            mondict = {'T_gt': T_gt}
             self.dump(mondict, path_pickle)
 
     def get_data(self, sequence):
@@ -63,11 +61,10 @@ class Dataset:
     def get_pc(self, sequence, k):
         path_sequence = os.path.join(Param.path_sequence_base, sequence)
         pc_file = "Hokuyo_" + str(k) + ".csv"
-        # return os.path.join(path_sequence, 'local_frame', pc_file)
         return os.path.join(path_sequence, Param.path_pc, pc_file)
 
-    def get_mc_results(self, path, sequence, scan_ref):
-        base_path = os.path.join(path, sequence, str(scan_ref))
+    def get_mc_results(self, base_path):
+        # base_path = os.path.join(path, sequence, str(scan_ref))
         path_p = os.path.join(base_path, 'mc.p')
         # if os.path.exists(path_p):
         #     mondict = self.load(path_p)
@@ -76,6 +73,7 @@ class Dataset:
         n = 0
         T_mc = SE3.new(Param.n_mc)
         T_init_mc = SE3.new(Param.n_mc)
+        # /home/parallels/Desktop/idp/results/Apartment/0_0/1_0/0/mc_2.txt
         while True:
             path = os.path.join(base_path, 'mc_' + str(n) + '.txt')
             if not os.path.exists(path):

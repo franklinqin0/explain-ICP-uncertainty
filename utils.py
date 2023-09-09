@@ -1,28 +1,98 @@
 import os
 import numpy as np
 from scipy.special import bernoulli
+import pandas as pd
 import subprocess
+
+def dec2str(val):
+    return str(val).replace('.', '_')
+
+
+def add_noise(noise_stddev, input_folder, output_folder):
+    # set random seed for reproducibility
+    np.random.seed(7)
+
+    # Define paths
+    # base = "/home/parallels/Desktop/idp/data/"
+    # input_folder = base + 'Apartment/local_frame'   # Replace with your input folder path
+    # output_folder = base + 'Apartment/lf_sensor/003' # Replace with your desired output folder path
+
+    # create output folder if it doesn't exist
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    # process each CSV file in the input folder
+    k = 0
+    while True:
+        # construct full file path
+        filename = "Hokuyo_" + str(k) + ".csv"
+        filepath = os.path.join(input_folder, filename)
+        if not os.path.exists(filepath):
+            break
+        # read CSV data
+        df = pd.read_csv(filepath)
+        
+        # Add Gaussian noise to x, y, z columns
+        df['x'] += np.random.normal(0, noise_stddev, df.shape[0])
+        df['y'] += np.random.normal(0, noise_stddev, df.shape[0])
+        df['z'] += np.random.normal(0, noise_stddev, df.shape[0])
+        
+        # Write noisy data to the output folder
+        df.to_csv(os.path.join(output_folder, filename), index=False)
+        k += 1
+
+    print("Processing complete!")
+
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
     n_mc = 30
-    path_sequence_base = '/home/parallels/Desktop/haha/data'
-    path_pc = "local_frame" # "lf_sensor/001"
-    results_path = "/home/parallels/Desktop/idp/results"
-    results_pert = "/home/parallels/Desktop/idp/results_init/1_2"
-    # results_pert = "/home/parallels/Desktop/idp/results_sensor/001"
+    path_sequence_base = '/home/parallels/Desktop/idp/data'
+    path_pc = None
+    # sensor noise, then init uncertainty
+    # naming: 0.01 -> 0_01
+    
+    # data_base = "/home/parallels/Desktop/idp/data/"
+    # data_input = 
+    
+    results_base = "/home/parallels/Desktop/idp/results"
+    results_path = None
+    
+    # results_pert = "/home/parallels/Desktop/idp/results_init/1_2"
+    # results_pert = "/home/parallels/Desktop/idp/results_sensor/001_12"
+    results_pert = None
+    
     lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
     config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
     
-    # Parameters to follow
-    map_unc = 1.2
     cov_std_pos = 0.2/np.sqrt(3)  # standard deviation of T_odo, translation
     cov_std_rot = 10/(180*np.sqrt(3))*np.pi  # standard deviation of T_odo, rot
-    xi = np.zeros((n_mc, 6))
-    np.random.seed(42)
-    for i in range(n_mc):
-        xi[i] = np.hstack((np.random.normal(0, map_unc*cov_std_rot, 3),
-                           np.random.normal(0, map_unc*cov_std_pos, 3)))
+    xi = None
+    
+    # features, can alter
+    sensor_noise = 0.0
+    init_unc = 1.0
+    
+    @classmethod
+    def update(cls):
+        """
+        Called when any feature changes to update associated variables.
+        """
+        # cls.results_path = os.path.join(cls.results_base, dec2str(0.0), dec2str(1.0))
+        # cls.results_pert = os.path.join(cls.results_base, dec2str(cls.sensor_noise), dec2str(cls.init_unc))
+        
+        if cls.sensor_noise >= 0.0:
+            cls.path_pc = os.path.join("local_frame", dec2str(cls.sensor_noise))
+        else: # sensor_noise < 0
+            raise Exception("Sensor noise should be nonnegative!")
+        cls.xi = np.zeros((cls.n_mc, 6))
+        np.random.seed(42)
+        for i in range(cls.n_mc):
+            cls.xi[i] = np.hstack((np.random.normal(0, cls.init_unc*cls.cov_std_rot, 3),
+                                   np.random.normal(0, cls.init_unc*cls.cov_std_pos, 3)))
+
+# call once to set assoicated vars to default values
+# Param.update()
 
 
 class SO3:
