@@ -49,17 +49,11 @@ class Param:
     n_mc = 30
     path_sequence_base = '/home/parallels/Desktop/idp/data'
     path_pc = None
+    
     # sensor noise, then init uncertainty
     # naming: 0.01 -> 0_01
-    
-    # data_base = "/home/parallels/Desktop/idp/data/"
-    # data_input = 
-    
     results_base = "/home/parallels/Desktop/idp/results"
     results_path = None
-    
-    # results_pert = "/home/parallels/Desktop/idp/results_init/1_2"
-    # results_pert = "/home/parallels/Desktop/idp/results_sensor/001_12"
     results_pert = None
     
     lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path

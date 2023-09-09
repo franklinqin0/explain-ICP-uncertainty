@@ -73,7 +73,7 @@ class Dataset:
         n = 0
         T_mc = SE3.new(Param.n_mc)
         T_init_mc = SE3.new(Param.n_mc)
-        # /home/parallels/Desktop/idp/results/Apartment/0_0/1_0/0/mc_2.txt
+
         while True:
             path = os.path.join(base_path, 'mc_' + str(n) + '.txt')
             if not os.path.exists(path):
