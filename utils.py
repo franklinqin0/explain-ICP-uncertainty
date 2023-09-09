@@ -5,7 +5,7 @@ import pandas as pd
 import subprocess
 
 def dec2str(val):
-    return str(val).replace('.', '_')
+    return str(round(val, 1)).replace('.', '_')
 
 
 def add_noise(noise_stddev, input_folder, output_folder):
@@ -41,7 +41,7 @@ def add_noise(noise_stddev, input_folder, output_folder):
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
-    n_mc = 30
+    n_mc = 1000
     dir_path = "/home/parallels/Desktop/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
