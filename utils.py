@@ -42,7 +42,7 @@ def add_noise(noise_stddev, input_folder, output_folder):
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
     n_mc = 30
-    dir_path = "/home/parallels/Desktop/idp/"
+    dir_path = "/usr/stud/qin/Desktop/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
     

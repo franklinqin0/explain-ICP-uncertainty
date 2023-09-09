@@ -10,6 +10,6 @@ def main(seq, sn, iu):
 
 if __name__ == "__main__":
     dataset = Dataset()
-    with multiprocessing.Pool() as pool:
+    with multiprocessing.Pool(20) as pool:
         args = [(seq, sn, iu) for seq in dataset.sequences for sn in np.arange(0, 2.1, 0.1) for iu in np.arange(1, 3.1, 0.1)]
         pool.starmap(main, args)
