@@ -4,8 +4,8 @@ import icp
 from dataset import Dataset
 
 
-Param.sensor_noise = 0.1
-Param.init_unc = 1.0
+Param.sensor_noise = 2.1
+Param.init_unc = 3.1
 Param.update()
 
 def uncertainty(): # scan_ref=0

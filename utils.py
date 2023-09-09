@@ -12,11 +12,6 @@ def add_noise(noise_stddev, input_folder, output_folder):
     # set random seed for reproducibility
     np.random.seed(7)
 
-    # Define paths
-    # base = "/home/parallels/Desktop/idp/data/"
-    # input_folder = base + 'Apartment/local_frame'   # Replace with your input folder path
-    # output_folder = base + 'Apartment/lf_sensor/003' # Replace with your desired output folder path
-
     # create output folder if it doesn't exist
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -47,16 +42,17 @@ def add_noise(noise_stddev, input_folder, output_folder):
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
     n_mc = 30
-    path_sequence_base = '/home/parallels/Desktop/idp/data'
+    dir_path = "/home/parallels/Desktop/idp/"
+    path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
     
     # sensor noise, then init uncertainty
     # naming: 0.01 -> 0_01
-    results_base = "/home/parallels/Desktop/idp/results"
+    results_base = os.path.join(dir_path, "results")
     results_path = None
     results_pert = None
     
-    lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
+    lpm_path = os.path.join(dir_path, "libpointmatcher/") # libpointmatcher path
     config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
     
     cov_std_pos = 0.2/np.sqrt(3)  # standard deviation of T_odo, translation
