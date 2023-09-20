@@ -40,8 +40,8 @@ def add_noise(noise_stddev, input_folder, output_folder):
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
     
-    # dir_path = "/usr/stud/qin/Desktop/idp/"
-    n_mc = 100
+    n_mc = 30
+    # dir_path = "/home/parallels/Desktop/idp/"
     dir_path = "/storage/user/qin/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
@@ -52,6 +52,7 @@ class Param:
     results_path = None
     results_pert = None
     
+    # lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
     lpm_path = "/usr/stud/qin/Desktop/idp/libpointmatcher/" # libpointmatcher path
     config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
     
@@ -81,8 +82,6 @@ class Param:
             cls.xi[i] = np.hstack((np.random.normal(0, cls.init_unc*cls.cov_std_rot, 3),
                                    np.random.normal(0, cls.init_unc*cls.cov_std_pos, 3)))
 
-# call once to set assoicated vars to default values
-# Param.update()
 
 
 class SO3:

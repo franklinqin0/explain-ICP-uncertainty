@@ -55,6 +55,9 @@ def results(dataset, clean_path, pert_path, sequence, scan_ref, scan_in):
         mcp_new[n] = SE3.log(SE3.mul(Tp_mc[n], T_init_inv))  # xi = log( T * T_hat^{-1} )
     cov_mcp = np.cov(mcp_new.T)
     
+    print("mc cov:", np.trace(cov_mc))
+    print("mcp cov:", np.trace(cov_mcp))
+    
     kl_div_mc = np.zeros((Param.n_mc, 2))
     
     for n in range(Param.n_mc):

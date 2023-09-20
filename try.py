@@ -1,6 +1,6 @@
 from utils import *
 
-Param.sensor_noise = 0.1
+Param.sensor_noise = 0.01
 Param.init_unc = 1.0
 Param.update()
 seq = "Apartment"

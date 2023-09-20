@@ -47,7 +47,7 @@ M = 2
 # np.random.seed(4)
 # x = np.random.randn(M)
 x = np.array([0.3, 1.5])
-reference = np.array([1, 2]) # sensor noise from 0 to 2, init uncertainty from 1 to 3
+reference = np.array([0.05, 1]) # sensor noise from 0 to 0.1 (10 cm), init uncertainty from 1 to 2
 # phi = kernel_shap(f, x, reference, M)
 # base_value = phi[-1]
 # shap_values = phi[:-1]

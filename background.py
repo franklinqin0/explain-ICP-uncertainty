@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from dataset import Dataset
 import multiprocessing
@@ -10,6 +11,10 @@ def main(seq, sn, iu):
 
 if __name__ == "__main__":
     dataset = Dataset()
+    print("Starting!")
+    start = time.time()
     with multiprocessing.Pool() as pool:
-        args = [(seq, round(sn, 1), round(iu, 1)) for seq in dataset.sequences for sn in np.arange(0, 0.7, 0.1) for iu in np.arange(1, 3.1, 0.1)]
+        args = [(seq, round(sn, 1), round(iu, 1)) for seq in dataset.sequences for sn in np.arange(0, 0.101, 0.01) for iu in np.arange(1, 2.101, 0.1)]
         pool.starmap(main, args)
+    end = time.time()
+    print("Finished! Total running time is:", end-start)
