@@ -5,73 +5,44 @@ import pandas as pd
 import subprocess
 
 def dec2str(val):
-    return str(val).replace('.', '_')
-
-
-def add_noise(noise_stddev, input_folder, output_folder):
-    # set random seed for reproducibility
-    np.random.seed(7)
-
-    # create output folder if it doesn't exist
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-    # process each CSV file in the input folder
-    k = 0
-    while True:
-        # construct full file path
-        filename = "Hokuyo_" + str(k) + ".csv"
-        filepath = os.path.join(input_folder, filename)
-        if not os.path.exists(filepath):
-            break
-        # read CSV data
-        df = pd.read_csv(filepath)
-        
-        # Add Gaussian noise to x, y, z columns
-        df['x'] += np.random.normal(0, noise_stddev, df.shape[0])
-        df['y'] += np.random.normal(0, noise_stddev, df.shape[0])
-        df['z'] += np.random.normal(0, noise_stddev, df.shape[0])
-        
-        # Write noisy data to the output folder
-        df.to_csv(os.path.join(output_folder, filename), index=False)
-        k += 1
+    return str(float(val)).replace('.', '_')
 
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
-    
     n_mc = 30
-    # dir_path = "/home/parallels/Desktop/idp/"
-    dir_path = "/storage/user/qin/idp/"
+    dir_path = "/home/parallels/Desktop/idp/"
+    # dir_path = "/storage/user/qin/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
     
-    # sensor noise, then init uncertainty
-    # naming: 0.01 -> 0_01
     results_base = os.path.join(dir_path, "results")
     results_path = None
     results_pert = None
     
-    # lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
-    lpm_path = "/usr/stud/qin/Desktop/idp/libpointmatcher/" # libpointmatcher path
+    lpm_path = "/home/parallels/Desktop/idp/libpointmatcher/" # libpointmatcher path
+    # lpm_path = "/usr/stud/qin/Desktop/idp/libpointmatcher/" # libpointmatcher path
     config_yaml = os.path.join(lpm_path, 'martin', 'config', "base_config.yaml")
     
     cov_std_pos = 0.2/np.sqrt(3)  # standard deviation of T_odo, translation
     cov_std_rot = 10/(180*np.sqrt(3))*np.pi  # standard deviation of T_odo, rot
     xi = None
     
-    # features, can alter
+    # 3 feature causes to attribute
+    # naming: 0.01 -> 0_01
     sensor_noise = 0.0
     init_unc = 1.0
     
+    # sensor noise from 0 to 0.1 (10 cm), init uncertainty scale factor from 1 to 2
+    mean_noise = 0.05
+    mean_unc = 1.5
+    mean_overlap = 0.830
+
     @classmethod
     def update(cls):
         """
         Called when any feature changes to update associated variables.
         """
-        # cls.results_path = os.path.join(cls.results_base, dec2str(0.0), dec2str(1.0))
-        # cls.results_pert = os.path.join(cls.results_base, dec2str(cls.sensor_noise), dec2str(cls.init_unc))
-        
         if cls.sensor_noise >= 0.0:
             cls.path_pc = os.path.join("local_frame", dec2str(cls.sensor_noise))
         else: # sensor_noise < 0
