@@ -1,12 +1,11 @@
 import scipy.special
 import numpy as np
 import itertools
+from collections import OrderedDict
 from utils import Param
 from dataset import Dataset
 from uncertainty import uncertainty
 from overlap import mean_overlap
-
-import time
 
 def powerset(iterable):
     s = list(iterable)
@@ -38,30 +37,37 @@ def kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M):
     tmp = np.linalg.inv(np.dot(np.dot(X.T, np.diag(weights)), X))
     return np.dot(tmp, np.dot(np.dot(X.T, np.diag(weights)), y))
 
-scan_ref = 0
+scan_ref = 1
 scan_in = scan_ref + 1
 seq = "Apartment"
 
 M = 3
 dataset = Dataset()
-overlap_mat = dataset.get_overlap_matrix(seq)
+shap = OrderedDict()
 
-curr_sensor_noise = 0.03
-curr_init_unc = 1.1
+overlap_mat = dataset.get_overlap_matrix(seq)
 curr_overlap_ratio = overlap_mat[scan_ref, scan_in]
 Param.mean_overlap = mean_overlap(scan_ref, scan_in, overlap_mat)
-
-x = np.array([curr_sensor_noise, curr_init_unc, curr_overlap_ratio])
 reference = np.array([Param.mean_noise, Param.mean_unc, Param.mean_overlap])
 
-phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
-base_value = phi[-1]
-shap_values = phi[:-1]
+for sn in np.arange(0.0, 0.101, 0.01):
+    for iu in np.arange(1, 2.001, 0.1):
+        curr_sensor_noise = round(sn, 2)
+        curr_init_unc = round(iu, 1)
+        x = np.array([curr_sensor_noise, curr_init_unc, curr_overlap_ratio])
+        
+        phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
+        base_value = phi[-1]
+        shap_values = phi[:-1]
+        shap[(curr_sensor_noise, curr_init_unc)] = shap_values
+
+print(shap)
+
 
 # print("  reference =", reference)
 # print("          x =", x)
-print("shap_values =", shap_values)
-print(" base_value =", base_value)
-print("phi:", phi)
+# print("shap_values =", shap_values)
+# print(" base_value =", base_value)
+# print("phi:", phi)
 # print("   sum(phi) =", np.sum(phi))
 # print("       f(x) =", f(dataset, seq, scan_ref, scan_in, x))

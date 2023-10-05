@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import glob
 from utils import *
+from overlap import calc_overlap
 
 class Dataset:
     sequences = [
@@ -27,14 +28,15 @@ class Dataset:
     def preprocessing_data(self, sequence):
         path_sequence = os.path.join(Param.path_sequence_base, sequence)
         path_pickle = os.path.join(path_sequence, 'data.p')
-        if os.path.exists(path_pickle):
+        if False: # os.path.exists(path_pickle):
             print('Data already preprocessed')
         else:
             # files = os.listdir(os.path.join(path_sequence, 'local_frame', dec2str(0.0)))
-            path_pattern = os.path.join(path_sequence, 'local_frame', 'Hokuyo*', dec2str(0.0))
+            path_pattern = os.path.join(path_sequence, 'local_frame', dec2str(0.0), 'Hokuyo*')
             files = glob.glob(path_pattern)
-            n_scan = int((len(files)-1)/4)
-            T_gt_file = os.path.join(path_sequence, 'global_frame', 'pose_scanner_leica.csv')
+            n_scan = len(files)
+            global_frame_path = os.path.join(path_sequence, 'global_frame')
+            T_gt_file = os.path.join(global_frame_path, 'pose_scanner_leica.csv')
             T_gt_data = np.genfromtxt(T_gt_file, delimiter=',', skip_header=1)
             T_gt = SE3.new(n_scan)
 
@@ -42,7 +44,23 @@ class Dataset:
                 T_gt[:, k, :] = T_gt_data[:, 2+4*k:6+4*k]
 
             overlap_matrix_path = os.path.join(Param.path_sequence_base, sequence, f"overlap_{sequence}.csv")
-            overlap_matrix = np.genfromtxt(overlap_matrix_path, delimiter=',')
+            # takes a while for the first time
+            if not os.path.exists(overlap_matrix_path):
+                overlap_matrix = np.ones((n_scan, n_scan))
+                for i in range(n_scan):
+                    for j in range(n_scan):
+                        if i != j:
+                            pc1_path = os.path.join(global_frame_path, f"PointCloud{i}.csv")
+                            pc1 = np.loadtxt(pc1_path, delimiter=",", skiprows=1)
+                            pc1 = pc1[:, 1:4]
+                            
+                            pc2_path = os.path.join(global_frame_path, f"PointCloud{j}.csv")
+                            pc2 = np.loadtxt(pc2_path, delimiter=",", skiprows=1)
+                            pc2 = pc2[:, 1:4]
+                            
+                            overlap_matrix[i, j] = calc_overlap(pc1, pc2, np.identity(4), np.identity(4))
+            else:
+                overlap_matrix = np.genfromtxt(overlap_matrix_path, delimiter=',')
             mondict = {
                 'T_gt': T_gt,
                 f"overlap_{sequence}.csv": overlap_matrix

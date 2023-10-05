@@ -1,9 +1,7 @@
 import os
 import numpy as np
 from pykdtree.kdtree import KDTree
-import open3d as o3d
 from utils import *
-from dataset import Dataset
 
 def calc_overlap(pc1_l, pc2_l, t1, t2, distance=0.2):
     pc1 = transform_point_cloud(pc1_l, t1)
@@ -165,7 +163,8 @@ def mean_overlap(r, c, overlap_mat):
     return np.mean(np.asarray(lst))
 
 
-def save_overlap():
+def save_overlap(seq):
+    Param.path_sequence_base
     global_frame = "data/Apartment/global_frame"
     overlap_mat_path = os.path.join(global_frame, "overlap_apartment.csv")
     overlap_mat = np.genfromtxt(overlap_mat_path, delimiter=',')
@@ -198,50 +197,3 @@ def transform_point_cloud(cloud, transform):
     homogeneous_coords = np.hstack([cloud, np.ones((cloud.shape[0], 1))])
     transformed_cloud = np.dot(transform, homogeneous_coords.T).T
     return transformed_cloud[:, :3]  # convert back to 3D points
-
-
-"""
-i, j = 0, 4
-global_frame = "data/Apartment/global_frame"
-local_frame = "data/Apartment/local_frame/0_0"
-
-pc1_path = os.path.join(global_frame, f"PointCloud{i}.csv")
-pc1 = np.loadtxt(pc1_path, delimiter=",", skiprows=1)
-pc1 = pc1[:, 1:4]
-
-pc2_path = os.path.join(global_frame, f"PointCloud{j}.csv")
-pc2 = np.loadtxt(pc2_path, delimiter=",", skiprows=1)
-pc2 = pc2[:, 1:4]
-
-dataset = Dataset()
-sequence = "Apartment"
-T_gt = dataset.get_data(sequence)
-
-cloud2_local = transform_point_cloud(pc2, SE3.inv(T_gt[j]))
-
-# pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(cloud2_local))
-
-# o3d.visualization.draw_geometries([pcd],
-#                                     zoom=0.3412,
-#                                     front=[0.4257, -0.2125, -0.8795],
-#                                     lookat=[2.6172, 2.0475, 1.532],
-#                                     up=[-0.0694, -0.9768, 0.2024])
-
-lpc2_path = os.path.join(local_frame, f"Hokuyo_{j}.csv")
-lpc2 = np.loadtxt(lpc2_path, delimiter=",", skiprows=1)
-lpc2 = lpc2[:, 1:4]
-
-gpc2 = transform_point_cloud(lpc2, SE3.mul(SE3.inv(T_gt[i]), T_gt[j]))
-comb = np.vstack([gpc2, pc1])
-
-lpcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(comb))
-
-o3d.visualization.draw_geometries([lpcd],
-                                    zoom=0.3412,
-                                    front=[0.4257, -0.2125, -0.8795],
-                                    lookat=[2.6172, 2.0475, 1.532],
-                                    up=[-0.0694, -0.9768, 0.2024])
-
-# for i in range(100):
-#     print(cloud2_local[i], lpc2[i])
-"""
