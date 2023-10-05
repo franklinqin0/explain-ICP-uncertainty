@@ -50,8 +50,10 @@ curr_overlap_ratio = overlap_mat[scan_ref, scan_in]
 Param.mean_overlap = mean_overlap(scan_ref, scan_in, overlap_mat)
 reference = np.array([Param.mean_noise, Param.mean_unc, Param.mean_overlap])
 
+uncertainty(dataset, seq, scan_ref, scan_in, 0.0, 1.0, curr_overlap_ratio)
+
 for sn in np.arange(0.0, 0.101, 0.01):
-    for iu in np.arange(1, 2.001, 0.1):
+    for iu in np.arange(1.0, 2.001, 0.1):
         curr_sensor_noise = round(sn, 2)
         curr_init_unc = round(iu, 1)
         x = np.array([curr_sensor_noise, curr_init_unc, curr_overlap_ratio])
@@ -59,6 +61,7 @@ for sn in np.arange(0.0, 0.101, 0.01):
         phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
         base_value = phi[-1]
         shap_values = phi[:-1]
+        print("shap_values:", shap_values)
         shap[(curr_sensor_noise, curr_init_unc)] = shap_values
 
 print(shap)

@@ -11,7 +11,6 @@ def mc(dataset, base_path, sequence, scan_ref, scan_in, curr_overlap):
     path = os.path.join(base_path, filename)
     
     if os.path.exists(path):
-        # print(path + " already exist")
         return
     T_gt = dataset.get_data(sequence)
     pc_ref, pc_in = dataset.get_pc(sequence, scan_ref, scan_in, curr_overlap)

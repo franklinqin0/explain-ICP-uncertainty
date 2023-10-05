@@ -59,11 +59,12 @@ class Dataset:
                             pc2 = pc2[:, 1:4]
                             
                             overlap_matrix[i, j] = calc_overlap(pc1, pc2, np.identity(4), np.identity(4))
+                np.savetxt("overlap_apartment.csv", overlap_matrix, delimiter=",")
             else:
                 overlap_matrix = np.genfromtxt(overlap_matrix_path, delimiter=',')
             mondict = {
                 'T_gt': T_gt,
-                f"overlap_{sequence}.csv": overlap_matrix
+                f"overlap_{sequence}": overlap_matrix
                 }
             self.dump(mondict, path_pickle)
 
@@ -77,7 +78,7 @@ class Dataset:
         path_sequence = os.path.join(Param.path_sequence_base, sequence)
         path = os.path.join(path_sequence, 'data.p')
         mondict = self.load(path)
-        return mondict[f"overlap_{sequence}.csv"]
+        return mondict[f"overlap_{sequence}"]
 
     @classmethod
     def load(cls, *_file_name):

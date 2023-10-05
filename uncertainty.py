@@ -29,7 +29,7 @@ def uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po):
         # current overlap ratio is set to mean overlap
         curr_overlap = po
 
-    print(f"Creating dataset with sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with current overlap = {curr_overlap!s:^4}")
+    print(f"Creating dataset with sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with partial overlap = {po!s:^5}")
     add_noise(clean_input_folder, pert_input_folder, scan_ref, scan_in, Param.sensor_noise, T_gt, curr_overlap)
 
     pert_path = os.path.join(Param.results_pert, str(scan_ref))
@@ -50,21 +50,21 @@ def uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po):
     return kl_div[0] # , kl_div[1]
 
 if __name__ == "__main__":
-    # dataset = sys.argv[1]
-    # seq = sys.argv[2]
-    # scan_ref = sys.argv[3]
-    # scan_in = sys.argv[4]
-    # sn = float(sys.argv[5])
-    # iu = float(sys.argv[6])
-    # po = float(sys.argv[7])
+    dataset = sys.argv[1]
+    seq = sys.argv[2]
+    scan_ref = sys.argv[3]
+    scan_in = sys.argv[4]
+    sn = float(sys.argv[5])
+    iu = float(sys.argv[6])
+    po = float(sys.argv[7])
     
-    dataset = Dataset()
-    seq = "Apartment"
-    scan_ref = 1
-    scan_in = 2
-    sn = 0.03
-    iu = 1.1
-    # po = 0.95
-    po = 0.850
+    # dataset = Dataset()
+    # seq = "Apartment"
+    # scan_ref = 1
+    # scan_in = 2
+    # sn = 0.03
+    # iu = 1.1
+    # # po = 0.95
+    # po = 0.850
     
     uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po)
