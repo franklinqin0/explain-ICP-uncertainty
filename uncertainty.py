@@ -29,7 +29,7 @@ def uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po):
         # current overlap ratio is set to mean overlap
         curr_overlap = po
 
-    print(f"Creating dataset with sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with partial overlap = {po!s:^5}")
+    print(f"Calculating uncertainty for: sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with partial overlap = {po!s:^5}")
     add_noise(clean_input_folder, pert_input_folder, scan_ref, scan_in, Param.sensor_noise, T_gt, curr_overlap)
 
     pert_path = os.path.join(Param.results_pert, str(scan_ref))

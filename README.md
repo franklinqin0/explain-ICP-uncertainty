@@ -12,10 +12,12 @@ Kernel SHAP
 
 ## TODO
 
-should run icp.mc sensor_noise=0.0, init_unc=1.0 before anything else
+should run icp.mc for sensor_noise=0.0, init_unc=1.0 before anything else
+
+can set `logger` in `base_config.yaml` to `NullLogger` to avoid seeing output from ICP
 
 [x] kernel_shap, `f`
-[] partial overlap
+[x] partial overlap
     [x] method to calculate overlap ratio correspond to overlap matrix
     [x] perturb input point cloud to a particular overlap ratio
     [x] vis perturbed point cloud
@@ -23,3 +25,8 @@ should run icp.mc sensor_noise=0.0, init_unc=1.0 before anything else
     [x] generate data
     [x] add to kernel shap
 [] write report
+[] replace avg with randomly selected instance
+[] summary_plot, dependence_plot
+[] scan_in - scan_ref > 1
+[] another ICP algorithm
+[] do calculus

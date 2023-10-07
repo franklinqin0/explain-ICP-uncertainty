@@ -28,7 +28,7 @@ class Dataset:
     def preprocessing_data(self, sequence):
         path_sequence = os.path.join(Param.path_sequence_base, sequence)
         path_pickle = os.path.join(path_sequence, 'data.p')
-        if False: # os.path.exists(path_pickle):
+        if os.path.exists(path_pickle):
             print('Data already preprocessed')
         else:
             # files = os.listdir(os.path.join(path_sequence, 'local_frame', dec2str(0.0)))
@@ -59,7 +59,7 @@ class Dataset:
                             pc2 = pc2[:, 1:4]
                             
                             overlap_matrix[i, j] = calc_overlap(pc1, pc2, np.identity(4), np.identity(4))
-                np.savetxt("overlap_apartment.csv", overlap_matrix, delimiter=",")
+                np.savetxt(overlap_matrix_path, overlap_matrix, delimiter=",")
             else:
                 overlap_matrix = np.genfromtxt(overlap_matrix_path, delimiter=',')
             mondict = {
