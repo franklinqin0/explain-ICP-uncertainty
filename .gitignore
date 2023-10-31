@@ -3,7 +3,6 @@
 __pycache__/
 data/
 results/
-results_sensor/
-results_init/
+results_100/
 libpointmatcher/
 libnabo/

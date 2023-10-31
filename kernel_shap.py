@@ -1,11 +1,10 @@
 import scipy.special
 import numpy as np
 import itertools
-from collections import OrderedDict
 from utils import Param
 from dataset import Dataset
 from uncertainty import uncertainty
-from overlap import mean_overlap
+import shap
 
 def powerset(iterable):
     s = list(iterable)
@@ -43,26 +42,32 @@ seq = "Apartment"
 
 M = 3
 dataset = Dataset()
-shap = OrderedDict()
 
 overlap_mat = dataset.get_overlap_matrix(seq)
-curr_overlap_ratio = overlap_mat[scan_ref, scan_in]
-Param.mean_overlap = mean_overlap(scan_ref, scan_in, overlap_mat)
-reference = np.array([Param.mean_noise, Param.mean_unc, Param.mean_overlap])
-# reference = np.array([0.0, 1.0, Param.mean_overlap])
+Param.curr_overlap = overlap_mat[scan_ref, scan_in]
+if Param.curr_overlap < 0.1:
+    raise Exception("curr overlap too small, change scan_ref / scan_in!")
+reference = np.array([0.0, 1.0, Param.curr_overlap])
+uncertainty(dataset, seq, scan_ref, scan_in, *reference)
 
-uncertainty(dataset, seq, scan_ref, scan_in, 0.0, 1.0, curr_overlap_ratio)
+shap_values = []
+features = []
 
 for sn in np.arange(0.0, 0.101, 0.01):
     for iu in np.arange(1.0, 2.001, 0.1):
-        curr_sensor_noise = round(sn, 2)
-        curr_init_unc = round(iu, 1)
-        x = np.array([curr_sensor_noise, curr_init_unc, curr_overlap_ratio])
-        
-        phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
-        base_value = phi[-1]
-        shap_values = phi[:-1]
-        print("shap_values:", shap_values)
-        shap[(curr_sensor_noise, curr_init_unc)] = shap_values
+        for po in np.arange(0.0, 0.101, 0.01):
+            
+            sensor_noise = round(sn, 2)
+            init_unc = round(iu, 1)
+            target_overlap = round(Param.curr_overlap - po, 3)
+            x = np.array([sensor_noise, init_unc, target_overlap])
+            
+            print("x:", x)
+            phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
+            # base_val = phi[-1]
+            shap_val = phi[:-1]
+            print("shap val:", shap_val)
+            shap_values.append(shap_val)
+            features.append([sensor_noise, init_unc, target_overlap])
 
-print(shap)
+shap.summary_plot(np.asarray(shap_values), np.asarray(features), ['sensor noise', 'init pose', 'partial overlap'])

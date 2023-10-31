@@ -10,13 +10,13 @@ def dec2str(val):
 
 class Param:
     # Monte-Carlo runs for computed pseudo ground-truth covariance
-    n_mc = 30
+    n_mc = 100
     dir_path = "/home/parallels/Desktop/idp/"
     # dir_path = "/storage/user/qin/idp/"
     path_sequence_base = os.path.join(dir_path, 'data')
     path_pc = None
     
-    results_base = os.path.join(dir_path, "results")
+    results_base = os.path.join(dir_path, "results_100")
     results_path = None
     results_pert = None
     
@@ -30,22 +30,19 @@ class Param:
     
     # 3 feature causes to attribute
     # naming: 0.01 -> 0_01
-    sensor_noise = 0.0
-    init_unc = 1.0
+    sensor_noise = 0.0 # sensor noise from 0 to 0.1 (10 cm), step size: 0.01
+    init_unc = 1.0 # init uncertainty scale factor from 1 to 2, step size: 1
+    curr_overlap = None # curr overlap from 0 to 1, target overlap = curr overlap - x, x from 0 to 0.1, step size: 0.01
     
-    # sensor noise from 0 to 0.1 (10 cm), init uncertainty scale factor from 1 to 2
-    mean_noise = 0.05
-    mean_unc = 1.5
-    mean_overlap = 0.830
 
     @classmethod
     def update(cls):
         """
         Called when any feature changes to update associated variables.
         """
-        if cls.sensor_noise >= 0.0:
-            cls.path_pc = os.path.join("local_frame", dec2str(cls.sensor_noise))
-        else: # sensor_noise < 0
+        if cls.sensor_noise < 0.0:
+        #     cls.path_pc = os.path.join("local_frame", dec2str(cls.sensor_noise))
+        # else: # sensor_noise < 0
             raise Exception("Sensor noise should be nonnegative!")
         cls.xi = np.zeros((cls.n_mc, 6))
         np.random.seed(42)

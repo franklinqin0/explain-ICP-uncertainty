@@ -91,11 +91,11 @@ def adjust_overlap(pc1, pc2, t1, t2, target_ratio):
         return reduce_overlap(pc1, pc2, t1, t2, target_ratio)
 
 
-def add_noise(input_folder, output_folder, scan_ref, scan_in, noise_stddev, T_gt, curr_overlap):
+def add_noise(input_folder, output_folder, scan_ref, scan_in, noise_stddev, T_gt, target_overlap):
     """
-    Add noise to scan_ref output and scan_in output point cloud files.
-    If `curr_overlap` is None, adjust scan_in output point cloud to satisfy
-    mean overlap ratio.
+    Add noise to `scan_ref` output and `scan_in` output point cloud files.
+    If target is not current overlap, adjust `scan_in` output point cloud
+    to satisfy mean overlap ratio.
     """
     
     if not os.path.exists(output_folder):
@@ -107,47 +107,29 @@ def add_noise(input_folder, output_folder, scan_ref, scan_in, noise_stddev, T_gt
     in_input_path = os.path.join(input_folder, in_input_filename)
     
     ref_output_path = os.path.join(output_folder, ref_input_filename)
+    in_output_path = os.path.join(output_folder, in_input_filename)
     
-    if curr_overlap is not None:
-        # ref_output_filename = "Mo_" + str(scan_ref) + "_" + str(scan_in) + ".csv"
-        in_output_filename = "Mo_" + str(scan_ref) + "_" + str(scan_in) + ".csv"
-        in_output_path = os.path.join(output_folder, in_output_filename)
-        
-        if os.path.exists(ref_output_path) and os.path.exists(in_output_path):
-            return
-
-        df_ref = pd.read_csv(ref_input_path)
-        pc_ref = df_ref[['x', 'y', 'z']].values
-        df_in = pd.read_csv(in_input_path)
-        pc_in = df_in[['x', 'y', 'z']].values
-        
-        # add noise before adjusting overlap
+    if os.path.exists(ref_output_path) and os.path.exists(in_output_path):
+        return
+    
+    df_ref = pd.read_csv(ref_input_path)
+    pc_ref = df_ref[['x', 'y', 'z']].values
+    df_in = pd.read_csv(in_input_path)
+    pc_in = df_in[['x', 'y', 'z']].values
+    
+    pc_ref += np.random.normal(0, noise_stddev, pc_ref.shape)
+    pc_in += np.random.normal(0, noise_stddev, pc_in.shape)
+    
+    # adjust overlap if target is not current overlap
+    if (abs(target_overlap - Param.curr_overlap) > 1e-3):
+        pc_in = adjust_overlap(pc_ref, pc_in, T_gt[scan_ref], T_gt[scan_in], target_overlap)
+    
+    if not os.path.exists(ref_output_path):
         pc_ref += np.random.normal(0, noise_stddev, pc_ref.shape)
-        pc_in += np.random.normal(0, noise_stddev, pc_in.shape)
-        pc_in = adjust_overlap(pc_ref, pc_in, T_gt[scan_ref], T_gt[scan_in], Param.mean_overlap)
-        
-        if not os.path.exists(ref_output_path):
-            np.savetxt(ref_output_path, pc_ref, delimiter=',', header="x,y,z", comments="")
-        np.savetxt(in_output_path, pc_in, delimiter=",", header="x,y,z", comments="")
-    else:
-        in_output_path = os.path.join(output_folder, in_input_filename)
-        
-        if os.path.exists(ref_output_path) and os.path.exists(in_output_path):
-            return
+        np.savetxt(ref_output_path, pc_ref, delimiter=',', header="x,y,z", comments="")
+    np.savetxt(in_output_path, pc_in, delimiter=',', header='x,y,z', comments="")
 
-        df_ref = pd.read_csv(ref_input_path)
-        pc_ref = df_ref[['x', 'y', 'z']].values
-        df_in = pd.read_csv(in_input_path)
-        pc_in = df_in[['x', 'y', 'z']].values
-        
-        pc_in += np.random.normal(0, noise_stddev, pc_in.shape)
-        
-        if not os.path.exists(ref_output_path):
-            pc_ref += np.random.normal(0, noise_stddev, pc_ref.shape)
-            np.savetxt(ref_output_path, pc_ref, delimiter=',', header="x,y,z", comments="")
-        np.savetxt(in_output_path, pc_in, delimiter=',', header="x,y,z", comments="")
 
-    
 def mean_overlap(r, c, overlap_mat):
     diff = c - r
     lst = []

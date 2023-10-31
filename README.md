@@ -24,9 +24,12 @@ can set `logger` in `base_config.yaml` to `NullLogger` to avoid seeing output fr
     [x] calc avg overlap
     [x] generate data
     [x] add to kernel shap
-[] write report
-[] replace avg with randomly selected instance
+    [] recompute overlap: [](https://github.com/ethz-asl/libpointmatcher/blob/master/examples/compute_overlap.cpp)
+[x] write report
+[x] compare 30 vs. 100, mean vs. scan_in = scan_ref
+[x] fix `f`
+[x] replace avg with randomly selected instance
 [] summary_plot, dependence_plot
 [] scan_in - scan_ref > 1
 [] another ICP algorithm
-[] do calculus
+<!-- [] do calculus -->

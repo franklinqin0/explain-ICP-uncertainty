@@ -44,8 +44,9 @@ class Dataset:
                 T_gt[:, k, :] = T_gt_data[:, 2+4*k:6+4*k]
 
             overlap_matrix_path = os.path.join(Param.path_sequence_base, sequence, f"overlap_{sequence}.csv")
-            # takes a while for the first time
+            
             if not os.path.exists(overlap_matrix_path):
+                print("overlap matrix DNE, would take a while for the first time ...")
                 overlap_matrix = np.ones((n_scan, n_scan))
                 for i in range(n_scan):
                     for j in range(n_scan):
@@ -60,6 +61,7 @@ class Dataset:
                             
                             overlap_matrix[i, j] = calc_overlap(pc1, pc2, np.identity(4), np.identity(4))
                 np.savetxt(overlap_matrix_path, overlap_matrix, delimiter=",")
+                print("overlap matrix saved to path:", overlap_matrix_path)
             else:
                 overlap_matrix = np.genfromtxt(overlap_matrix_path, delimiter=',')
             mondict = {
@@ -93,18 +95,15 @@ class Dataset:
         with open(file_name, "wb") as file_pi:
             pickle.dump(mondict, file_pi)
 
-    def get_pc(self, sequence, scan_ref, scan_in, curr_overlap):
+    def get_pc(self, sequence, scan_ref, scan_in):
         path_sequence = os.path.join(Param.path_sequence_base, sequence)
         ref_pc = "Hokuyo_" + str(scan_ref) + ".csv"
-        if curr_overlap is None:
-            in_pc = "Hokuyo_" + str(scan_in) + ".csv"
-        else:
-            in_pc = "Mo_" + str(scan_ref) + "_" + str(scan_in) + ".csv"
+        in_pc = "Hokuyo_" + str(scan_in) + ".csv"
         ref_pc_path = os.path.join(path_sequence, Param.path_pc, ref_pc)
         in_pc_path = os.path.join(path_sequence, Param.path_pc, in_pc)
         return ref_pc_path, in_pc_path
 
-    def get_mc_results(self, base_path, curr_overlap):
+    def get_mc_results(self, base_path):
         # base_path = os.path.join(path, sequence, str(scan_ref))
         # path_p = os.path.join(base_path, 'mc.p')
         # if os.path.exists(path_p):
@@ -117,13 +116,10 @@ class Dataset:
 
         # TODO: add scan_ref and scan_in to filename
         for n in range(Param.n_mc):
-            if curr_overlap is None:
-                filename = 'mc_' + str(n) + '.txt'
-            else:
-                filename = 'momc_' + str(n) + '.txt'
+            filename = 'mc_' + str(n) + '.txt'
             path = os.path.join(base_path, filename)
             if not os.path.exists(path):
-                break
+                raise Exception(f"file {path} DNE!")
             data = np.genfromtxt(path)
             T_mc[n] = data[:4]
             T_init_mc[n] = data[4:]
