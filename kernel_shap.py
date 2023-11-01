@@ -5,6 +5,8 @@ from utils import Param
 from dataset import Dataset
 from uncertainty import uncertainty
 import shap
+from multiprocessing import Pool
+import matplotlib.pyplot as plt
 
 def powerset(iterable):
     s = list(iterable)
@@ -39,7 +41,6 @@ def kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M):
 scan_ref = 1
 scan_in = scan_ref + 1
 seq = "Apartment"
-
 M = 3
 dataset = Dataset()
 
@@ -71,3 +72,4 @@ for sn in np.arange(0.0, 0.101, 0.01):
             features.append([sensor_noise, init_unc, target_overlap])
 
 shap.summary_plot(np.asarray(shap_values), np.asarray(features), ['sensor noise', 'init pose', 'partial overlap'])
+plt.savefig('shap_summary_plot.png', bbox_inches='tight')
