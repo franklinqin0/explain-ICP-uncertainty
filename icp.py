@@ -1,14 +1,14 @@
 import os
+import glob
 import numpy as np
 from utils import *
 
 def mc(dataset, base_path, sequence, scan_ref, scan_in, target_overlap):
-    # base_path = os.path.join(path, sequence, str(scan_ref))
-    filename = "mc_" + str(Param.n_mc-1) + ".txt"
-    path = os.path.join(base_path, filename)
-    
-    if os.path.exists(path):
+    path_pattern = os.path.join(base_path, 'mc_*')
+    files = glob.glob(path_pattern)
+    if len(files) == Param.n_mc:
         return
+    
     T_gt = dataset.get_data(sequence)
     pc_ref, pc_in = dataset.get_pc(sequence, scan_ref, scan_in)
     T_init = SE3.mul(SE3.inv(T_gt[scan_ref]), T_gt[scan_in])
@@ -18,8 +18,11 @@ def mc(dataset, base_path, sequence, scan_ref, scan_in, target_overlap):
         filename = "mc_" + str(n) + ".txt"
         path = os.path.join(base_path, filename)
         if os.path.exists(path):
+            if os.path.getsize(path) > 0:
             # print(path + " already exist")
-            continue
+                continue
+            else:
+                os.remove(path)
 
         # sample initial transformation
         T_init_n = SE3.normalize(SE3.mul(SE3.exp(-Param.xi[n]), T_init))  # T = exp(xi) T_hat

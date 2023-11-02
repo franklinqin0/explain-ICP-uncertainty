@@ -1,3 +1,4 @@
+import sys
 import time
 import numpy as np
 from dataset import Dataset
@@ -10,7 +11,7 @@ def uncertainty_wrapper(args):
 
 
 if __name__ == "__main__":
-    scan_ref = 1
+    scan_ref = int(sys.argv[1])
     scan_in = scan_ref + 1
     seq = "Apartment"
     M = 3
