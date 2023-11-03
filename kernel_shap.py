@@ -1,3 +1,5 @@
+import os
+import sys
 import scipy.special
 import numpy as np
 import itertools
@@ -38,7 +40,7 @@ def kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M):
     tmp = np.linalg.inv(np.dot(np.dot(X.T, np.diag(weights)), X))
     return np.dot(tmp, np.dot(np.dot(X.T, np.diag(weights)), y))
 
-scan_ref = 1
+scan_ref = int(sys.argv[1])
 scan_in = scan_ref + 1
 seq = "Apartment"
 M = 3
@@ -53,23 +55,30 @@ uncertainty(dataset, seq, scan_ref, scan_in, *reference)
 
 shap_values = []
 features = []
+path_pickle = os.path.join(Param.path_sequence_base, seq, f'shap_{scan_ref}_{scan_in}.p')
 
-for sn in np.arange(0.0, 0.101, 0.01):
-    for iu in np.arange(1.0, 2.001, 0.1):
-        for po in np.arange(0.0, 0.101, 0.01):
-            
-            sensor_noise = round(sn, 2)
-            init_unc = round(iu, 1)
-            target_overlap = round(Param.curr_overlap - po, 3)
-            x = np.array([sensor_noise, init_unc, target_overlap])
-            
-            print("x:", x)
-            phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
-            # base_val = phi[-1]
-            shap_val = phi[:-1]
-            print("shap val:", shap_val)
-            shap_values.append(shap_val)
-            features.append([sensor_noise, init_unc, target_overlap])
+if os.path.exists(path_pickle):
+    mondict = dataset.load(path_pickle)
+    shap_values, features = mondict['shap_values'], mondict['features']
+else:
+    for sn in np.arange(0.0, 0.101, 0.01):
+        for iu in np.arange(1.0, 2.001, 0.1):
+            for po in np.arange(0.0, 0.101, 0.01):
+                
+                sensor_noise = round(sn, 2)
+                init_unc = round(iu, 1)
+                target_overlap = round(Param.curr_overlap - po, 3)
+                x = np.array([sensor_noise, init_unc, target_overlap])
+                
+                phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)
+                # base_val = phi[-1]
+                shap_val = phi[:-1]
+                print("shap val:", shap_val)
+                shap_values.append(shap_val)
+                features.append([sensor_noise, init_unc, target_overlap])
+
+    mondict = {'shap_values': shap_values, 'features': features}
+    dataset.dump(mondict, path_pickle)
 
 shap.summary_plot(np.asarray(shap_values), np.asarray(features), ['sensor noise', 'init pose', 'partial overlap'])
 plt.savefig('shap_summary_plot.png', bbox_inches='tight')
