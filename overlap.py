@@ -146,7 +146,6 @@ def mean_overlap(r, c, overlap_mat):
 
 
 def save_overlap(seq):
-    Param.path_sequence_base
     global_frame = "data/Apartment/global_frame"
     overlap_mat_path = os.path.join(global_frame, "overlap_apartment.csv")
     overlap_mat = np.genfromtxt(overlap_mat_path, delimiter=',')

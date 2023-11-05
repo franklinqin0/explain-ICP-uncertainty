@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 import scipy.special
 import numpy as np
 import itertools
@@ -46,13 +47,6 @@ seq = "Apartment"
 M = 3
 dataset = Dataset()
 
-overlap_mat = dataset.get_overlap_matrix(seq)
-Param.curr_overlap = overlap_mat[scan_ref, scan_in]
-if Param.curr_overlap < 0.1:
-    raise Exception("curr overlap too small, change scan_ref / scan_in!")
-reference = np.array([0.0, 1.0, Param.curr_overlap])
-uncertainty(dataset, seq, scan_ref, scan_in, *reference)
-
 shap_values = []
 features = []
 path_pickle = os.path.join(Param.path_sequence_base, seq, f'shap_{scan_ref}_{scan_in}.p')
@@ -61,6 +55,13 @@ if os.path.exists(path_pickle):
     mondict = dataset.load(path_pickle)
     shap_values, features = mondict['shap_values'], mondict['features']
 else:
+    overlap_mat = dataset.get_overlap_matrix(seq)
+    Param.curr_overlap = overlap_mat[scan_ref, scan_in]
+    if Param.curr_overlap < 0.1:
+        raise Exception("curr overlap too small, change scan_ref / scan_in!")
+    reference = np.array([0.0, 1.0, Param.curr_overlap])
+    uncertainty(dataset, seq, scan_ref, scan_in, *reference)
+    
     for sn in np.arange(0.0, 0.101, 0.01):
         for iu in np.arange(1.0, 2.001, 0.1):
             for po in np.arange(0.0, 0.101, 0.01):
@@ -80,5 +81,23 @@ else:
     mondict = {'shap_values': shap_values, 'features': features}
     dataset.dump(mondict, path_pickle)
 
-shap.summary_plot(np.asarray(shap_values), np.asarray(features), ['sensor noise', 'init pose', 'partial overlap'])
-plt.savefig('shap_summary_plot.png', bbox_inches='tight')
+# start visualization
+feature_names = ['sensor_noise', 'init_pose', 'partial_overlap']
+shap_values = np.asarray(shap_values)
+features = np.asarray(features)
+
+# summary plot
+shap.summary_plot(shap_values, features, feature_names, sort=False)
+plt.savefig(f"summary_{scan_ref}_{scan_in}.png", bbox_inches='tight')
+
+# dependence plot
+for i, name in enumerate(feature_names):
+    shap.dependence_plot(name, shap_values, features, feature_names=feature_names, interaction_index=None)
+    plt.savefig(f"dependence_{scan_ref}_{scan_in}_{name}.png", bbox_inches='tight')
+
+# waterfall plot
+plt.clf()
+idx = random.choice(np.where(np.any(shap < -1e-3, axis=1))[0])
+expl = shap.Explanation(values=shap_values, data=features, feature_names=feature_names, base_values=0.0)
+shap.waterfall_plot(expl[idx])
+plt.savefig(f"waterfall_{scan_ref}_{scan_in}_idx_{idx}.png", bbox_inches='tight')
