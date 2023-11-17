@@ -99,7 +99,7 @@ def add_noise(input_folder, output_folder, scan_ref, scan_in, noise_stddev, T_gt
     """
     
     if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+        os.makedirs(output_folder, exist_ok=True)
     
     ref_input_filename = "Hokuyo_" + str(scan_ref) + ".csv"
     in_input_filename = "Hokuyo_" + str(scan_in) + ".csv"

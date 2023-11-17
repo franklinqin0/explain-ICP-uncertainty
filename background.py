@@ -14,7 +14,6 @@ if __name__ == "__main__":
     scan_ref = int(sys.argv[1])
     scan_in = scan_ref + 1
     seq = "Apartment"
-    M = 3
     dataset = Dataset()
 
     overlap_mat = dataset.get_overlap_matrix(seq)
@@ -30,7 +29,7 @@ if __name__ == "__main__":
             for po in np.arange(0.0, 0.101, 0.01):
                 sensor_noise = round(sn, 2)
                 init_unc = round(iu, 1)
-                target_overlap = round(Param.curr_overlap - po, 3)
+                target_overlap = round(Param.curr_overlap - po, 2)
                 x = np.array([sensor_noise, init_unc, target_overlap])
                 params_list.append((dataset, seq, scan_ref, scan_in, sensor_noise, init_unc, target_overlap))
 

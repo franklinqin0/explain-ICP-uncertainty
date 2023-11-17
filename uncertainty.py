@@ -9,7 +9,7 @@ def uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po):
     Param.sensor_noise = round(sn, 2)
     Param.init_unc = round(iu, 1)
     Param.update()
-    target_overlap = round(po, 3)
+    target_overlap = round(po, 2)
 
     T_gt = dataset.get_data(seq)
 
@@ -24,14 +24,14 @@ def uncertainty(dataset, seq, scan_ref, scan_in, sn, iu, po):
         
     clean_path = os.path.join(Param.results_base, seq, dec2str(0.0), dec2str(1.0), str(scan_ref))
     if not os.path.exists(clean_path):
-        os.makedirs(clean_path)
+        os.makedirs(clean_path, exist_ok=True)
     pert_path = os.path.join(Param.results_pert, str(scan_ref))
     if not os.path.exists(pert_path):
-        os.makedirs(pert_path)
+        os.makedirs(pert_path, exist_ok=True)
     
     clean_input_folder = os.path.join(Param.path_sequence_base, seq, "local_frame", dec2str(0.0))
 
-    print(f"Calculating uncertainty for: sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with partial overlap = {target_overlap!s:^5}")
+    print(f"Calculating uncertainty for sequence {seq}, pc {scan_ref} and {scan_in}: sensor noise = {Param.sensor_noise} and init uncertainty = {Param.init_unc} with partial overlap = {target_overlap!s:^5}")
     # add noise and adjust overlap if needed
     add_noise(clean_input_folder, Param.path_pc, scan_ref, scan_in, Param.sensor_noise, T_gt, target_overlap)
 
