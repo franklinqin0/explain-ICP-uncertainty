@@ -25,7 +25,7 @@ First, then download `global_frame` and `local_frame` datasets from the *Challen
 
 Then, create a directory `data/<sequence>/`, and put the `global_frame` and `local_frame` datasets under `data/<sequence>/global_frame/` and `data/<sequence>/local_frame/0_0/`.
 
-Last, change variables `dir_path` and `results_base` of `class Param` in `utils.py` according to your need.
+Last, change variables `lpm_path`, `dir_path` and `results_base` of `class Param` in `utils.py` according to your paths.
 
 After running ICP algorithms with different perturbations (see [next section](#run-pipeline)), the file structure would look like this:
 
