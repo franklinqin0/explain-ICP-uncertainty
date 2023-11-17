@@ -6,7 +6,8 @@ This codebase implements Ziyuan Qin's work *Explanation of Uncertainty in Point 
 
 After creating a Python virtual environment using `conda`, `pyenv virtualenv`, or `venv`, do `pip install -r requirements.txt`.
 
-Then, clone the fork of `libpointmatcher` by [3D ICP](https://arxiv.org/pdf/1909.05722.pdf).
+Then, clone the [fork](https://github.com/CAOR-MINES-ParisTech/libpointmatcher) of `libpointmatcher` by [3D ICP](https://arxiv.org/pdf/1909.05722.pdf).
+
 ```sh
 cd 3d-icp-cov
 git clone https://github.com/CAOR-MINES-ParisTech/libpointmatcher.git
@@ -53,12 +54,14 @@ After running ICP algorithms with different perturbations (see [next section](#r
 Both experiments in the paper can be run. Experiment 1 determines the relationship between perturbation levels of uncertainty sources and uncertainty estimate for point clouds `scan_ref` and `scan_ref+1` in sequence `Apartment`. Experiment 2 determines the effects of uncertainty sources for contiguous point clouds in all sequences.
 
 To run experiment 1, do:
+
 ```sh
 python background.py <scan_ref> # run background dataset
 python kernel_shap.py <scan_ref> # use kernel SHAP to generate plots
 ```
 
 To run experiment 2, do:
+
 ```sh
 python avg_parallel.py <seq> # the parallel version of average.py
 python ks_avg_parallel.py <seq> # the parallel version of ks_avg.py
