@@ -71,7 +71,7 @@ else:
                 
                 sensor_noise = round(sn, 2)
                 init_unc = round(iu, 1)
-                target_overlap = round(Param.curr_overlap - po, 3)
+                target_overlap = round(Param.curr_overlap - po, 2)
                 x = np.array([sensor_noise, init_unc, target_overlap])
                 
                 phi = kernel_shap(f, dataset, seq, scan_ref, scan_in, x, reference, M)

@@ -31,7 +31,7 @@ for seq in dataset.sequences:
     ax.set_xlabel('Sensor Noise')
     ax.set_ylabel('Initial Pose Uncertainty')
     ax.set_zlabel('Partial Overlap')
-    dir = "mean_pert_ld"
+    dir = "mean_pert"
     if not os.path.exists():
         os.makedirs(dir)
     plt.savefig(f"mean_pert/{seq}.png")
