@@ -8,18 +8,19 @@ from overlap import calc_overlap
 class Dataset:
     sequences = [
         'Apartment',
-        # 'Hauptgebaude',
-        # 'Stairs',
-        # 'Mountain',
-        # 'Gazebo_summer',
-        # 'Gazebo_winter',
-        # 'Wood_summer',
-        # 'Wood_winter',
+        'ETH',
+        'Stairs',
+        'Mountain',
+        'Gazebo_summer',
+        'Gazebo_winter',
+        'Wood_summer',
+        'Wood_autumn',
     ]
     overlap_matrix = None
 
-    def __init__(self):
-        self.read_data()
+    def __init__(self, read_data=True):
+        if read_data:
+            self.read_data()
 
     def read_data(self):
         for sequence in self.sequences:
@@ -46,7 +47,7 @@ class Dataset:
             overlap_matrix_path = os.path.join(Param.path_sequence_base, sequence, f"overlap_{sequence}.csv")
             
             if not os.path.exists(overlap_matrix_path):
-                print("overlap matrix DNE, would take a while for the first time ...")
+                print(f"{sequence}'s overlap matrix DNE, would take a while for the first time ...")
                 overlap_matrix = np.ones((n_scan, n_scan))
                 for i in range(n_scan):
                     for j in range(n_scan):
