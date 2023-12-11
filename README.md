@@ -1,6 +1,6 @@
 # Explain ICP Uncertainty
 
-This codebase implements Ziyuan Qin's work *Explanation of Uncertainty in Point Cloud Registration*. It uses [kernel SHAP](https://arxiv.org/abs/1705.07874) to find the associations between uncertainty sources and estimated uncertainty in ICP algorithms.
+This codebase implements my Interdisciplinary Project (IDP) [*Explanation of Uncertainty in Point Cloud Registration*](IDP_report.pdf) at Technical University of Munich. It uses [kernel SHAP](https://arxiv.org/abs/1705.07874) to find the associations between uncertainty sources and estimated uncertainty in Iterative Closest Point (ICP) algorithms.
 
 ## Installation
 
